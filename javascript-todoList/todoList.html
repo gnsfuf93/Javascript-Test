@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        width: 300px;
+      }
+      .ml5 {
+        margin-left: 5px;
+      }
+      .itemList {
+        border: 1px solid red;
+        height: 300px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input type="text" id="inputText" />
+      <input type="button" value="ENTER" id="enterButton" />
+      <input type="button" value="INIT" id="initButton" />
+    </div>
+    <hr />
+    <div class="itemList"></div>
+
+    <script>
+      const inputElement = document.getElementById("inputText");
+      const enterButtonElement = document.getElementById("enterButton");
+      const initButtonElement = document.getElementById("initButton");
+      const itemListElement = document.querySelector(".itemList");
+
+      const inputInit = () => {
+        inputElement.value = "";
+        inputElement.focus();
+      };
+
+      const setScroll = () => {
+        itemListElement.scrollTop = itemListElement.scrollHeight;
+      };
+
+      const deleteFunc = (el) => {
+        el.parentNode.remove();
+      };
+
+      const addFunc = () => {
+        const inputValue = inputElement.value;
+        if (!inputValue) {
+          return;
+        }
+
+        const _id = itemListElement.childElementCount;
+
+        const _itemDiv = document.createElement("div");
+        const _input = document.createElement("input");
+        const _button = document.createElement("input");
+
+        _itemDiv.setAttribute("id", `div_${_id}`);
+
+        _input.setAttribute("value", inputValue);
+        _input.setAttribute("readonly", true);
+
+        _button.setAttribute("type", "button");
+        _button.setAttribute("value", "X");
+        _button.setAttribute("class", "ml5");
+        _button.setAttribute("onclick", "deleteFunc(this)");
+
+        _itemDiv.appendChild(_input);
+        _itemDiv.appendChild(_button);
+        itemListElement.appendChild(_itemDiv);
+
+        inputInit();
+        setScroll();
+      };
+
+      inputElement.addEventListener("keypress", (e) => {
+        if (e.key == "Enter") addFunc();
+      });
+
+      enterButtonElement.addEventListener("click", () => {
+        addFunc();
+      });
+
+      initButtonElement.addEventListener("click", () => {
+        while (itemListElement.hasChildNodes()) {
+          itemListElement.removeChild(itemListElement.firstChild);
+        }
+      });
+
+      inputInit();
+    </script>
+  </body>
+</html>

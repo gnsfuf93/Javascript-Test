@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        background-color: #e9ecef;
+        min-height: 600px;
+        height: calc(100% - 30px);
+      }
+      .wrap {
+        width: 600px;
+        height: 100%;
+        margin: auto;
+        background-color: white;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+      }
+      .header {
+        border-bottom: 1px solid #e9ecef;
+        padding: 20px 30px;
+      }
+      .header > h1 {
+        margin: 0;
+      }
+      .header > .day {
+        margin-top: 4px;
+        color: #868e96;
+        font-size: 16px;
+      }
+      .header > .task {
+        color: #20c997;
+        font-size: 18px;
+        margin-top: 20px;
+        font-weight: bold;
+      }
+      .content {
+        flex: 1;
+        padding: 20px 30px;
+        overflow-y: auto;
+      }
+      .item {
+        margin-bottom: 10px;
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+      }
+      .item .circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+        cursor: pointer;
+        margin-right: 10px;
+        border: 1px solid #868e96;
+      }
+      .item .circle.checked {
+        border: 2px solid #20c997;
+      }
+      .item .txt {
+        flex: 1;
+        height: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-right: 10px;
+        color: #42474d;
+        font-size: 15px;
+      }
+      .item .txt.checked {
+        color: #c0d4e7;
+      }
+      .item .del {
+        border: 1px solid;
+        width: 10px;
+        height: 10px;
+        cursor: pointer;
+        visibility: hidden;
+      }
+      .item .del.show1 {
+        background-color: #e9ecef;
+        visibility: visible;
+      }
+      .item .del.show2 {
+        background-color: #ff0000;
+        visibility: visible;
+      }
+      .inputArea {
+        padding: 20px 20px 60px 20px;
+        background: #f8f9fa;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        display: none;
+      }
+      .inputArea input {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+      }
+      .inputArea.show {
+        display: block;
+      }
+      .inputArea input::placeholder {
+        color: #acaeaf;
+      }
+      .createBtn > img {
+        position: relative;
+        bottom: 30px;
+        display: block;
+        margin: auto;
+        transition-duration: 0.1s;
+        cursor: pointer;
+      }
+      .createBtn > img.del {
+        transform: rotate(45deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <h1 id="date">2021-01-01</h1>
+        <div class="day" id="day">화요일</div>
+        <div class="task" id="task"></div>
+      </div>
+      <div class="content" id="content"></div>
+      <div class="inputArea" id="inputArea">
+        <input
+          type="text"
+          class="txt"
+          id="inputTxt"
+          placeholder="입력 후 엔터"
+        />
+      </div>
+    </div>
+    <div class="createBtn">
+      <img src="./addBtn.png" alt="" width="50px" id="addBtn" />
+    </div>
+
+    <script>
+      let internalData = [];
+      let rowIndex = 0;
+
+      const contentElement = document.querySelector("#content");
+      const inputAreaElement = document.querySelector("#inputArea");
+      const inputTxtElement = document.querySelector("#inputTxt");
+      const addBtnElement = document.querySelector("#addBtn");
+
+      const onSetDate = () => {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = today.getMonth() + 1;
+        let date = today.getDate();
+        let day = today.getDay();
+        let week = ["일", "월", "화", "수", "목", "금", "토"];
+
+        const el1 = document.querySelector("#date");
+        const el2 = document.querySelector("#day");
+
+        el1.innerText = `${year}년 ${month}월 ${date}일`;
+        el2.innerText = `${week[day]}요일`;
+      };
+
+      const onSetTaskInfo = () => {
+        const taskElement = document.querySelector("#task");
+        const checkedElements = document.querySelectorAll(".circle.checked");
+
+        const totalCount = internalData.length;
+        const checkedCount = checkedElements.length;
+        const taskCount = totalCount - checkedCount;
+
+        if (taskCount) {
+          taskElement.innerText = `할 일 ${taskCount}개 남음`;
+        } else {
+          taskElement.innerText = `할 일 없음`;
+        }
+      };
+
+      const onSetScroll = () => {
+        contentElement.scrollTop = contentElement.scrollHeight;
+      };
+
+      const onDeleteElement = (currentRowIndex) => {
+        document.getElementById(`item${currentRowIndex}`).remove();
+
+        internalData.every((item, idx) => {
+          if (currentRowIndex == item.rowIndex) {
+            internalData.splice(idx, 1);
+            return false;
+          }
+          return true;
+        });
+
+        onSetTaskInfo();
+      };
+
+      const onAddList = () => {
+        // SET INTERNAL DATA
+        const rowIndex = rowIndex++;
+        const value = inputTxtElement.value;
+        internalData.push({ rowIndex, value });
+
+        // INIT INPUT VALUE
+        inputTxtElement.value = "";
+
+        // CREATE ELEMENT
+        const itemElement = document.createElement("div");
+        itemElement.setAttribute("class", "item");
+        itemElement.setAttribute("id", `item${rowIndex}`);
+
+        const circleElement = document.createElement("div");
+        circleElement.setAttribute("class", "circle");
+
+        const txtElement = document.createElement("div");
+        txtElement.setAttribute("class", "txt");
+        txtElement.setAttribute("id", `txt${rowIndex}`);
+        txtElement.innerText = value;
+
+        const delElement = document.createElement("div");
+        delElement.setAttribute("class", "del");
+        delElement.setAttribute("id", `del${rowIndex}`);
+
+        // SET EVENT LISTENER
+        circleElement.addEventListener("click", () => {
+          circleElement.classList.toggle("checked");
+          txtElement.classList.toggle("checked");
+          onSetTaskInfo();
+        });
+        itemElement.addEventListener("mouseover", () => {
+          delElement.classList.toggle("show1");
+        });
+        itemElement.addEventListener("mouseout", () => {
+          delElement.classList.toggle("show1");
+        });
+        delElement.addEventListener("mouseover", () => {
+          delElement.classList.toggle("show2");
+        });
+        delElement.addEventListener("mouseout", () => {
+          delElement.classList.toggle("show2");
+        });
+        delElement.addEventListener("click", () => {
+          onDeleteElement(rowIndex);
+        });
+
+        // SET ELEMENT
+        itemElement.append(circleElement, txtElement, delElement);
+        contentElement.append(itemElement);
+
+        onSetTaskInfo();
+        onSetScroll();
+      };
+
+      inputTxtElement.addEventListener("keypress", (e) => {
+        if (!e.target.value.trim()) return;
+        if (e.key == "Enter") onAddList();
+      });
+
+      addBtnElement.addEventListener("click", () => {
+        addBtnElement.classList.toggle("del");
+        inputAreaElement.classList.toggle("show");
+        inputTxtElement.focus();
+      });
+
+      onSetTaskInfo();
+      onSetDate();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <input type="button" value="module call test" id="testBtn" />
+
+    <script type="module">
+      import module1 from "./moduleTest2-1.js";
+      import module2 from "./moduleTest2-2.js";
+      import module3 from "./moduleTest2-3.js";
+      document.querySelector("#root").innerHTML = module1 + " " + module2;
+
+      console.log(module3);
+
+      // DOM 에서 module function 호출
+      document
+        .querySelector("#testBtn")
+        .addEventListener("click", () => module3.test2());
+    </script>
+  </body>
+</html>

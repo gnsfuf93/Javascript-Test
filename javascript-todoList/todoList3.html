@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div style="display: none">
+      <div id="template">
+        <h2>hello</h2>
+        <input type="text" />
+        <button>BUTTON</button>
+      </div>
+    </div>
+    <input type="button" value="test" onclick="onClick()" />
+
+    <script>
+      function onClick() {
+        const templateEl = document.querySelector("#template");
+        console.log(templateEl);
+
+        const cloneEl = templateEl.cloneNode(true);
+        console.log(cloneEl);
+
+        document.body.append(cloneEl);
+      }
+    </script>
+  </body>
+</html>
